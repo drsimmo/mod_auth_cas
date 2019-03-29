@@ -2428,7 +2428,7 @@ authz_status cas_check_authorization(request_rec *r,
 
 	if(!r->user) return AUTHZ_DENIED_NO_USER;
 
-	t = require_line;
+	t = ap_resolve_env(r->pool,require_line);
 	while ((w = ap_getword_conf(r->pool, &t)) && w[0]) {
 		count_casattr++;
 		if (cas_match_attribute(w, attrs, r) == CAS_ATTR_MATCH) {
