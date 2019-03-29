@@ -2428,17 +2428,18 @@ authz_status cas_check_authorization(request_rec *r,
 
 	if(!r->user) return AUTHZ_DENIED_NO_USER;
 
-	t = ap_resolve_env(r->pool,require_line);
+	t = require_line;
 	while ((w = ap_getword_conf(r->pool, &t)) && w[0]) {
 		count_casattr++;
-		if (cas_match_attribute(w, attrs, r) == CAS_ATTR_MATCH) {
+		ww = ap_resolve_env(r->pool,w)
+		if (cas_match_attribute(ww, attrs, r) == CAS_ATTR_MATCH) {
 			/* If *any* attribute matches, then
 			 * authorization has succeeded and all
 			 * of the others are ignored. */
 			if(c->CASDebug)
 				ap_log_rerror(APLOG_MARK, APLOG_DEBUG, 0, r,
 					      "Require cas-attribute "
-					      "'%s' matched", w);
+					      "'%s' matched", ww);
 			return AUTHZ_GRANTED;
 		}
 	}
