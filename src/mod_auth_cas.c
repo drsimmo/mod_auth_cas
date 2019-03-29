@@ -2419,7 +2419,7 @@ authz_status cas_check_authorization(request_rec *r,
 	const cas_cfg *const c = ap_get_module_config(r->server->module_config, &auth_cas_module);
 	const cas_saml_attr *const attrs = cas_get_attributes(r);
 
-	const char *t, *w;
+	const char *t, *w, *ww;
 	unsigned int count_casattr = 0;
 
 	if(c->CASDebug)
@@ -2431,7 +2431,7 @@ authz_status cas_check_authorization(request_rec *r,
 	t = require_line;
 	while ((w = ap_getword_conf(r->pool, &t)) && w[0]) {
 		count_casattr++;
-		ww = ap_resolve_env(r->pool,w)
+		ww = ap_resolve_env(r->pool,w);
 		if (cas_match_attribute(ww, attrs, r) == CAS_ATTR_MATCH) {
 			/* If *any* attribute matches, then
 			 * authorization has succeeded and all
