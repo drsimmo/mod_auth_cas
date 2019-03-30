@@ -2422,7 +2422,7 @@ authz_status cas_check_authorization(request_rec *r,
 	const char *t, *w, *ww, *output, *err;
 	unsigned int count_casattr = 0;
 	apr_pool_t *temp_pool;
-  ap_expr_info_t *info;
+  ap_expr_info_t * info;
 
 	if(c->CASDebug)
 		ap_log_rerror(APLOG_MARK, APLOG_DEBUG, 0, r,
@@ -2439,6 +2439,7 @@ authz_status cas_check_authorization(request_rec *r,
 		/* Check to see if there are any expressions that need 
 		 * parsing, especially variables with functions */
 		apr_pool_create(&temp_pool,NULL);
+		info->root_node
 		ww = ap_expr_parse(r->pool,temp_pool,info,w,NULL);
 		apr_pool_destroy(temp_pool);
 		if (!ww) {
