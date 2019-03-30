@@ -2419,7 +2419,7 @@ authz_status cas_check_authorization(request_rec *r,
 	const cas_cfg *const c = ap_get_module_config(r->server->module_config, &auth_cas_module);
 	const cas_saml_attr *const attrs = cas_get_attributes(r);
 
-	const char *t, *w, *ww, *expr, *err;
+	const char *t, *w, *ww, *output, *err;
 	unsigned int count_casattr = 0;
 	apr_pool_t *temp_pool;
 	ap_expr_info_t *info;
@@ -2439,12 +2439,12 @@ authz_status cas_check_authorization(request_rec *r,
 		/* Check to see if there are any expressions that need 
 		 * parsing, especially variables with functions */
 		apr_pool_create(&temp_pool,NULL);
-		ww = ap_expr_parse(r->pool,temp_pool,&info,w,NULL);
+		ww = ap_expr_parse(r->pool,temp_pool,info,w,NULL);
 		if (!ww) {
-			expr = ap_expr_str_exec(r,info,&err);
+			output = ap_expr_str_exec(r,info,&err);
 			if(c->CASDebug)
 				ap_log_rerror(APLOG_MARK, APLOG_DEBUG, 0, r, 
-				"Expression is: '%s'",expr);
+				"Expression is: '%s'",output);
 		} else {
 			if(c->CASDebug)
 				ap_log_rerror(APLOG_MARK, APLOG_DEBUG, 0, r,
@@ -2462,7 +2462,7 @@ authz_status cas_check_authorization(request_rec *r,
 			if(c->CASDebug)
 				ap_log_rerror(APLOG_MARK, APLOG_DEBUG, 0, r,
 					      "Require cas-attribute "
-					      "'%s' matched", expr);
+					      "'%s' matched", output);
 			return AUTHZ_GRANTED;
 		}
 	}
