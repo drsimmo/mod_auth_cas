@@ -2419,7 +2419,7 @@ authz_status cas_check_authorization(request_rec *r,
 	const cas_cfg *const c = ap_get_module_config(r->server->module_config, &auth_cas_module);
 	const cas_saml_attr *const attrs = cas_get_attributes(r);
 
-	const char *t, *w, *ww, *err;
+	const char *t, *tt, *w, *ww, *err;
 	const char *output = malloc(sizeof(*output));
 	unsigned int count_casattr = 0;
 	apr_pool_t *temp_pool;
@@ -2434,7 +2434,7 @@ authz_status cas_check_authorization(request_rec *r,
 	t = require_line;
 	while ((w = ap_getword_conf(r->pool, &t)) && w[0]) {
 		count_casattr++;
-//		tt = strndup(w+7,sizeof(w)-7);
+		tt = strndup(w+7,sizeof(w)-7);
 		if(c->CASDebug)
 			ap_log_rerror(APLOG_MARK, APLOG_DEBUG, 0, r,
 		    "attribute is: '%s'",w);
