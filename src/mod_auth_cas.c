@@ -2422,7 +2422,6 @@ authz_status cas_check_authorization(request_rec *r,
 	const char *t, *w, *ww, *expr, *err;
 	unsigned int count_casattr = 0;
 	apr_pool_t *temp_pool;
-	int *tpstat;
 	ap_expr_info_t *info;
 
 	if(c->CASDebug)
@@ -2436,7 +2435,7 @@ authz_status cas_check_authorization(request_rec *r,
 		count_casattr++;
 		/* Check to see if there are any expressions that need 
 		 * parsing, especially variables with functions */
-		tpstat = apr_pool_create(&temp_pool,NULL);
+		apr_pool_create(&temp_pool,NULL);
 		ww = ap_expr_parse(r->pool,temp_pool,info,w,NULL);
 		if (!ww) {
 			expr = ap_expr_str_exec(r,info,&err);
@@ -2447,7 +2446,8 @@ authz_status cas_check_authorization(request_rec *r,
 		}
 		if (err) {
 			if(c->CASDebug)
-				ap_log_rerror(APLOG_MARK, APLOG_DEBUG, 0, r, err);
+				ap_log_rerror(APLOG_MARK, APLOG_DEBUG, 0, r, 
+				"Could not execute expression: '%s'",err);
 		}
 		if (cas_match_attribute(expr, attrs, r) == CAS_ATTR_MATCH) {
 			/* If *any* attribute matches, then
