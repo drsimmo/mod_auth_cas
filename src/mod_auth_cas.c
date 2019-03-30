@@ -2420,7 +2420,7 @@ authz_status cas_check_authorization(request_rec *r,
 	const cas_saml_attr *const attrs = cas_get_attributes(r);
 
 	const char *t, *w, *ww, *err;
-	char *output = malloc(sizeof(*output));
+	const char *output = malloc(sizeof(*output));
 	unsigned int count_casattr = 0;
 	apr_pool_t *temp_pool;
   ap_expr_info_t *info = malloc(sizeof(*info));
@@ -2441,24 +2441,21 @@ authz_status cas_check_authorization(request_rec *r,
 		 * parsing, especially variables with functions */
 		apr_pool_create(&temp_pool,NULL);
 		ww = ap_expr_parse(r->pool,temp_pool,info,w,NULL);
-			if(c->CASDebug)
-				ap_log_rerror(APLOG_MARK, APLOG_DEBUG, 0, r, 
-				"Expression is: '%s'",info->root_node);
 		apr_pool_destroy(temp_pool);
 		if (!ww) {
 			output = ap_expr_str_exec(r,info,&err);
 			if(c->CASDebug)
 				ap_log_rerror(APLOG_MARK, APLOG_DEBUG, 0, r, 
 				"Expression is: '%s'",output);
+			if (err) {
+				if(c->CASDebug)
+					ap_log_rerror(APLOG_MARK, APLOG_DEBUG, 0, r, 
+					"Could not execute expression: '%s'",err);
+			}
 		} else {
 			if(c->CASDebug)
 				ap_log_rerror(APLOG_MARK, APLOG_DEBUG, 0, r,
-		      	"Could not parse expression.");
-		}
-		if (err) {
-			if(c->CASDebug)
-				ap_log_rerror(APLOG_MARK, APLOG_DEBUG, 0, r, 
-				"Could not execute expression: '%s'",err);
+		      	"Could not parse expression: '%s'",ww);
 		}
 		if (cas_match_attribute(output, attrs, r) == CAS_ATTR_MATCH) {
 			/* If *any* attribute matches, then
