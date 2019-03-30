@@ -2419,10 +2419,10 @@ authz_status cas_check_authorization(request_rec *r,
 	const cas_cfg *const c = ap_get_module_config(r->server->module_config, &auth_cas_module);
 	const cas_saml_attr *const attrs = cas_get_attributes(r);
 
-	const char *t, *w, *ww, *output, *err;
+	const char *t, *w, *ww, output, *err;
 	unsigned int count_casattr = 0;
 	apr_pool_t *temp_pool;
-  ap_expr_info_t * info;
+  ap_expr_info_t info;
 
 	if(c->CASDebug)
 		ap_log_rerror(APLOG_MARK, APLOG_DEBUG, 0, r,
