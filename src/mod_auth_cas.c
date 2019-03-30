@@ -2442,7 +2442,7 @@ authz_status cas_check_authorization(request_rec *r,
 		ww = ap_expr_parse(r->pool,temp_pool,info,w,NULL);
 		apr_pool_destroy(temp_pool);
 		if (!ww) {
-			output = ap_expr_str_exec(r,info,err);
+			output = ap_expr_str_exec(r,info,&err);
 			if(c->CASDebug)
 				ap_log_rerror(APLOG_MARK, APLOG_DEBUG, 0, r, 
 				"Expression is: '%s'",output);
