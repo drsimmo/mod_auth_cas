@@ -2455,7 +2455,7 @@ authz_status cas_check_authorization(request_rec *r,
 				ap_log_rerror(APLOG_MARK, APLOG_DEBUG, 0, r, 
 				"Could not execute expression: '%s'",err);
 		}
-		if (cas_match_attribute(expr, attrs, r) == CAS_ATTR_MATCH) {
+		if (cas_match_attribute(output, attrs, r) == CAS_ATTR_MATCH) {
 			/* If *any* attribute matches, then
 			 * authorization has succeeded and all
 			 * of the others are ignored. */
