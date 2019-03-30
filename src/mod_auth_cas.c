@@ -24,6 +24,7 @@
 
 #include <error.h>
 #include <string.h>
+#include <stdlib.h>
 #include <sys/file.h>
 #include <sys/types.h>
 
