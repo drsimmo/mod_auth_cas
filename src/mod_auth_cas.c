@@ -2433,6 +2433,9 @@ authz_status cas_check_authorization(request_rec *r,
 	t = require_line;
 	while ((w = ap_getword_conf(r->pool, &t)) && w[0]) {
 		count_casattr++;
+		if(c->CASDebug)
+			ap_log_rerror(APLOG_MARK, APLOG_DEBUG, 0, r,
+		    "attribute is: '%s'",w);
 		/* Check to see if there are any expressions that need 
 		 * parsing, especially variables with functions */
 		apr_pool_create(&temp_pool,NULL);
