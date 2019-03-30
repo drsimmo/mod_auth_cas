@@ -2422,8 +2422,8 @@ authz_status cas_check_authorization(request_rec *r,
 	const char *t, *w, *ww, *expr, *err;
 	unsigned int count_casattr = 0;
 	apr_pool_t *temp_pool;
-	apr_status_t *tpstat;
-	ap_expr_info_t $info;
+	int *tpstat;
+	ap_expr_info_t *info;
 
 	if(c->CASDebug)
 		ap_log_rerror(APLOG_MARK, APLOG_DEBUG, 0, r,
