@@ -24,7 +24,6 @@
 
 #include <error.h>
 #include <string.h>
-#include <stdlib.h>
 #include <sys/file.h>
 #include <sys/types.h>
 
@@ -2458,6 +2457,7 @@ authz_status cas_check_authorization(request_rec *r,
 			if(c->CASDebug)
 				ap_log_rerror(APLOG_MARK, APLOG_DEBUG, 0, r,
 		      	"Could not parse expression: '%s'",ww);
+			return AUTHZ_DENIED;
 		}
 		if (cas_match_attribute(output, attrs, r) == CAS_ATTR_MATCH) {
 			/* If *any* attribute matches, then
@@ -2467,7 +2467,6 @@ authz_status cas_check_authorization(request_rec *r,
 				ap_log_rerror(APLOG_MARK, APLOG_DEBUG, 0, r,
 					      "Require cas-attribute "
 					      "'%s' matched", output);
-			free(tt);
 			return AUTHZ_GRANTED;
 		}
 	}
