@@ -2452,7 +2452,7 @@ authz_status cas_check_authorization(request_rec *r,
 	return AUTHZ_DENIED;
 }
 
-const char * const attr_spec check_expressions(char *w, request_rec *r) {
+const char attr_spec check_expressions(char *w, request_rec *r) {
 
 		const cas_cfg *const c = ap_get_module_config(r->server->module_config, &auth_cas_module);
 
