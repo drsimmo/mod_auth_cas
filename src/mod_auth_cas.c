@@ -2441,7 +2441,7 @@ authz_status cas_check_authorization(request_rec *r,
 		/* Check to see if there are any expressions that need 
 		 * parsing, especially variables with functions */
 		apr_pool_create(&temp_pool,NULL);
-		ww = ap_expr_parse(r->pool,temp_pool,info,w,NULL);
+		ww = ap_expr_parse(r->pool,temp_pool,info,tt,NULL);
 		apr_pool_destroy(temp_pool);
 		if (!ww) {
 			output = ap_expr_str_exec(r,info,&err);
