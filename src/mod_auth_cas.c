@@ -2418,9 +2418,9 @@ authz_status cas_check_authorization(request_rec *r,
 {
 	const cas_cfg *const c = ap_get_module_config(r->server->module_config, &auth_cas_module);
 	const cas_saml_attr *const attrs = cas_get_attributes(r);
-	const char *const attr_spec = check_expressions(r,w);
 
 	const char *t, *w, *output;
+	const char *const attr_spec = check_expressions(r,w);
 	unsigned int count_casattr = 0;
 
 	if(c->CASDebug)
