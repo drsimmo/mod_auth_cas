@@ -2419,11 +2419,8 @@ authz_status cas_check_authorization(request_rec *r,
 	const cas_cfg *const c = ap_get_module_config(r->server->module_config, &auth_cas_module);
 	const cas_saml_attr *const attrs = cas_get_attributes(r);
 
-	const char *t, *tt, *w, *ww, *err;
-	const char *output = malloc(sizeof(*output));
+	const char *t, *w, *output;
 	unsigned int count_casattr = 0;
-	apr_pool_t *temp_pool;
-  ap_expr_info_t *info = malloc(sizeof(*info));
 
 	if(c->CASDebug)
 		ap_log_rerror(APLOG_MARK, APLOG_DEBUG, 0, r,
@@ -2434,6 +2431,37 @@ authz_status cas_check_authorization(request_rec *r,
 	t = require_line;
 	while ((w = ap_getword_conf(r->pool, &t)) && w[0]) {
 		count_casattr++;
+		output = check_expressions(w, r);
+		if (cas_match_attribute(output, attrs, r) == CAS_ATTR_MATCH) {
+			/* If *any* attribute matches, then
+			 * authorization has succeeded and all
+			 * of the others are ignored. */
+			if(c->CASDebug)
+				ap_log_rerror(APLOG_MARK, APLOG_DEBUG, 0, r,
+					      "Require cas-attribute "
+					      "'%s' matched", output);
+			return AUTHZ_GRANTED;
+		}
+	}
+
+	if (count_casattr == 0) {
+		if(c->CASDebug)
+			ap_log_rerror(APLOG_MARK, APLOG_WARNING, 0, r,
+				      "'Require cas-attribute' missing specification(s) in configuration. Declining.");
+	}
+	return AUTHZ_DENIED;
+}
+
+const char * const attr_spec check_expressions(char *w, request_rec *r) {
+
+		const cas_cfg *const c = ap_get_module_config(r->server->module_config, &auth_cas_module);
+
+		const char *tt, *ww, *err;
+		const char *output = malloc(sizeof(*output));
+
+		apr_pool_t *temp_pool;
+  	ap_expr_info_t *info = malloc(sizeof(*info));
+
 		tt = strndup(w+7,sizeof(w)-7);
 		if(c->CASDebug)
 			ap_log_rerror(APLOG_MARK, APLOG_DEBUG, 0, r,
@@ -2459,24 +2487,7 @@ authz_status cas_check_authorization(request_rec *r,
 		      	"Could not parse expression: '%s'",ww);
 			return AUTHZ_DENIED;
 		}
-		if (cas_match_attribute(output, attrs, r) == CAS_ATTR_MATCH) {
-			/* If *any* attribute matches, then
-			 * authorization has succeeded and all
-			 * of the others are ignored. */
-			if(c->CASDebug)
-				ap_log_rerror(APLOG_MARK, APLOG_DEBUG, 0, r,
-					      "Require cas-attribute "
-					      "'%s' matched", output);
-			return AUTHZ_GRANTED;
-		}
-	}
-
-	if (count_casattr == 0) {
-		if(c->CASDebug)
-			ap_log_rerror(APLOG_MARK, APLOG_WARNING, 0, r,
-				      "'Require cas-attribute' missing specification(s) in configuration. Declining.");
-	}
-	return AUTHZ_DENIED;
+		return output;
 }
 
 static const authz_provider authz_cas_provider =
