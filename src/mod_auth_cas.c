@@ -2438,6 +2438,9 @@ authz_status cas_check_authorization(request_rec *r,
 		/* find length of attribute name by parsing on : */
 		e = strchr(w,':');
 		index = (int)(e-w+1);
+		if(c->CASDebug)
+			ap_log_rerror(APLOG_MARK, APLOG_DEBUG, 0, r,
+		    "index is: '%d'",index);
 		tt = strndup(w+index,sizeof(w)-index);
 		if(c->CASDebug)
 			ap_log_rerror(APLOG_MARK, APLOG_DEBUG, 0, r,
