@@ -2419,9 +2419,10 @@ authz_status cas_check_authorization(request_rec *r,
 	const cas_cfg *const c = ap_get_module_config(r->server->module_config, &auth_cas_module);
 	const cas_saml_attr *const attrs = cas_get_attributes(r);
 
-	const char *t, *tt, *w, *ww, *err;
+	const char *t, *tt, *w, *ww, *err, *e;
 	const char *output = malloc(sizeof(*output));
 	unsigned int count_casattr = 0;
+	int index;
 	apr_pool_t *temp_pool;
   ap_expr_info_t *info = malloc(sizeof(*info));
 
@@ -2434,30 +2435,40 @@ authz_status cas_check_authorization(request_rec *r,
 	t = require_line;
 	while ((w = ap_getword_conf(r->pool, &t)) && w[0]) {
 		count_casattr++;
-		tt = strndup(w+7,sizeof(w)-7);
+		/* find length of attribute name by parsing on : */
+		e = strchr(w,':');
+		index = (int)(e-w)+1;
+		if(c->CASDebug)
+			ap_log_rerror(APLOG_MARK, APLOG_DEBUG, 0, r,
+		    "index is: %d",index);
 		if(c->CASDebug)
 			ap_log_rerror(APLOG_MARK, APLOG_DEBUG, 0, r,
 		    "attribute is: '%s'",w);
 		/* Check to see if there are any expressions that need 
 		 * parsing, especially variables with functions */
-		apr_pool_create(&temp_pool,NULL);
-		ww = ap_expr_parse(r->pool,temp_pool,info,w,NULL);
-		apr_pool_destroy(temp_pool);
-		if (!ww) {
-			output = ap_expr_str_exec(r,info,&err);
-			if(c->CASDebug)
-				ap_log_rerror(APLOG_MARK, APLOG_DEBUG, 0, r, 
-				"Expression is: '%s'",output);
-			if (err) {
+		if (index > 0) {
+			tt = strndup(w+index*2,sizeof(w)-index*2);
+			apr_pool_create(&temp_pool,NULL);
+			ww = ap_expr_parse(r->pool,temp_pool,info,w,NULL);
+			apr_pool_destroy(temp_pool);
+			if (!ww) {
+				output = ap_expr_str_exec(r,info,&err);
 				if(c->CASDebug)
 					ap_log_rerror(APLOG_MARK, APLOG_DEBUG, 0, r, 
-					"Could not execute expression: '%s'",err);
+					"Expression is: '%s'",output);
+				if (err) {
+					if(c->CASDebug)
+						ap_log_rerror(APLOG_MARK, APLOG_DEBUG, 0, r, 
+						"Could not execute expression: '%s'",err);
+				}
+			} else {
+				if(c->CASDebug)
+					ap_log_rerror(APLOG_MARK, APLOG_DEBUG, 0, r,
+							"Could not parse expression: '%s'",ww);
+				return AUTHZ_DENIED;
 			}
 		} else {
-			if(c->CASDebug)
-				ap_log_rerror(APLOG_MARK, APLOG_DEBUG, 0, r,
-		      	"Could not parse expression: '%s'",ww);
-			return AUTHZ_DENIED;
+			output = w;
 		}
 		if (cas_match_attribute(output, attrs, r) == CAS_ATTR_MATCH) {
 			/* If *any* attribute matches, then
