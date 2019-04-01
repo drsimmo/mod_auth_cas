@@ -2485,7 +2485,7 @@ char * cas_check_expressions(request_rec *r, char *word) {
 			 * to the position after the : – therefore we need
 			 * to multiply the index by 2 to get the correct
 			 * position */
-			tt = strndup(word+index*2,sizeof(word)-index*2);
+			tt = strndup(word+index,sizeof(word)-index);
 			apr_pool_create(&temp_pool,NULL);
 			ww = ap_expr_parse(r->pool,temp_pool,info,tt,NULL);
 			apr_pool_destroy(temp_pool);
