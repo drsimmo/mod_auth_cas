@@ -13,3 +13,4 @@ tests/check_mac
 tests/*.gcda
 tests/*.gcno
 .vscode/
+.vscode/ipch/*/mmap_address.bin
