@@ -2480,7 +2480,7 @@ char * cas_check_expressions(request_rec *r, const char *word) {
 		 * We're shifting the pointer position on word 
 		 * variable here though! */
 		e = strchr(word,':');
-		index = (int)(e-word)+1;
+		index = (int)(e-word+1);
 		if(c->CASDebug)
 			ap_log_rerror(APLOG_MARK, APLOG_DEBUG, 0, r,
 		    "strchr output is: %s",e);
