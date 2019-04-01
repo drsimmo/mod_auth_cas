@@ -2483,6 +2483,9 @@ char * cas_check_expressions(request_rec *r, const char *word) {
 		index = (int)(e-word)+1;
 		if(c->CASDebug)
 			ap_log_rerror(APLOG_MARK, APLOG_DEBUG, 0, r,
+		    "index is: %d",index);
+		if(c->CASDebug)
+			ap_log_rerror(APLOG_MARK, APLOG_DEBUG, 0, r,
 		    "attribute is: '%s'",word); 
 		/* Check to see if there are any expressions that need 
 		 * parsing, especially variables with functions */
@@ -2509,9 +2512,6 @@ char * cas_check_expressions(request_rec *r, const char *word) {
 				if(c->CASDebug)
 					ap_log_rerror(APLOG_MARK, APLOG_DEBUG, 0, r,
 							"Could not parse expression: '%s'",ww);
-				if(c->CASDebug)
-					ap_log_rerror(APLOG_MARK, APLOG_DEBUG, 0, r,
-							"Expression is: '%s'",word);
 				return AUTHZ_DENIED;
 			}
 		} else {
