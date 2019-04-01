@@ -2487,7 +2487,7 @@ char * cas_check_expressions(request_rec *r, char *word) {
 			 * position */
 			tt = strndup(word+index,sizeof(word)-index);
 			apr_pool_create(&temp_pool,NULL);
-			ww = ap_expr_parse(r->pool,temp_pool,info,tt,NULL);
+			ww = ap_expr_parse(r->pool,temp_pool,info,word,NULL);
 			apr_pool_destroy(temp_pool);
 			if (!ww) {
 				output = ap_expr_str_exec(r,info,&err);
