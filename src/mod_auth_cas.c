@@ -2438,7 +2438,7 @@ authz_status cas_check_authorization(request_rec *r,
 		
 		/* Check for Apache 2.4 expressions and parse any found */
 		output = cas_check_expressions(r, w);
-		if (output == AUTHZ_DENIED)
+		if (output == CAS_ATTR_NO_MATCH)
 				return AUTHZ_DENIED;
 
 		if (cas_match_attribute(output, attrs, r) == CAS_ATTR_MATCH) {
@@ -2483,7 +2483,7 @@ char * cas_check_expressions(request_rec *r, const char *word) {
 		index = (int)(e-word)+1;
 		if(c->CASDebug)
 			ap_log_rerror(APLOG_MARK, APLOG_DEBUG, 0, r,
-		    "index is: %d",index);
+		    "strchr output is: %d",e);
 		if(c->CASDebug)
 			ap_log_rerror(APLOG_MARK, APLOG_DEBUG, 0, r,
 		    "attribute is: '%s'",word); 
@@ -2512,7 +2512,7 @@ char * cas_check_expressions(request_rec *r, const char *word) {
 				if(c->CASDebug)
 					ap_log_rerror(APLOG_MARK, APLOG_DEBUG, 0, r,
 							"Could not parse expression: '%s'",ww);
-				return AUTHZ_DENIED;
+				return CAS_ATTR_NO_MATCH;
 			}
 		} else {
 			output = word;
