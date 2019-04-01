@@ -2483,7 +2483,7 @@ char * cas_check_expressions(request_rec *r, const char *word) {
 		index = (int)(e-word)+1;
 		if(c->CASDebug)
 			ap_log_rerror(APLOG_MARK, APLOG_DEBUG, 0, r,
-		    "strchr output is: %d",e);
+		    "strchr output is: %s",e);
 		if(c->CASDebug)
 			ap_log_rerror(APLOG_MARK, APLOG_DEBUG, 0, r,
 		    "attribute is: '%s'",word); 
@@ -2512,7 +2512,7 @@ char * cas_check_expressions(request_rec *r, const char *word) {
 				if(c->CASDebug)
 					ap_log_rerror(APLOG_MARK, APLOG_DEBUG, 0, r,
 							"Could not parse expression: '%s'",ww);
-				return CAS_ATTR_NO_MATCH;
+				return (char *)CAS_ATTR_NO_MATCH;
 			}
 		} else {
 			output = word;
