@@ -2484,7 +2484,7 @@ char * cas_check_expressions(request_rec *r, char *word) {
 			ww = ap_expr_parse(r->pool,temp_pool,info,word,NULL);
 			apr_pool_destroy(temp_pool);
 			if (!ww) {
-				output = ap_expr_str_exec(r,info,&err);
+				output = (char *)ap_expr_str_exec(r,info,&err);
 				if(c->CASDebug)
 					ap_log_rerror(APLOG_MARK, APLOG_DEBUG, 0, r, 
 					"Parsed expression is: '%s'",output);
