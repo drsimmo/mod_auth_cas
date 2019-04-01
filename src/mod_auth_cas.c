@@ -2460,8 +2460,7 @@ char * cas_check_expressions(request_rec *r, char *word) {
 
 		const cas_cfg *const c = ap_get_module_config(r->server->module_config, &auth_cas_module);
 
-		const char *e, *err, *ww;
-		const char *tt = NULL;
+		const char *e, *err, *tt, *ww;
 		char *output = malloc(sizeof(*output));
 		int index;
 
