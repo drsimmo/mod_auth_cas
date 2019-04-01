@@ -14,3 +14,4 @@ tests/*.gcda
 tests/*.gcno
 .vscode/
 .vscode/ipch/*/mmap_address.bin
+.vscode/ipch/2de757725d500596/mmap_address.bin

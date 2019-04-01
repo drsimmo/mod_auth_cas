@@ -2438,6 +2438,8 @@ authz_status cas_check_authorization(request_rec *r,
 		
 		/* Check for Apache 2.4 expressions and parse any found */
 		output = cas_check_expressions(r, w);
+		if (output == AUTHZ_DENIED)
+				return AUTHZ_DENIED;
 
 		if (cas_match_attribute(output, attrs, r) == CAS_ATTR_MATCH) {
 			/* If *any* attribute matches, then
