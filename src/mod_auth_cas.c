@@ -2419,8 +2419,8 @@ authz_status cas_check_authorization(request_rec *r,
 	const cas_cfg *const c = ap_get_module_config(r->server->module_config, &auth_cas_module);
 	const cas_saml_attr *const attrs = cas_get_attributes(r);
 
-	const char *t;
-	char *w, *output;
+	const char *t, *w;
+	char *output;
 	unsigned int count_casattr = 0;
 
 	if(c->CASDebug)
@@ -2456,7 +2456,7 @@ authz_status cas_check_authorization(request_rec *r,
 	return AUTHZ_DENIED;
 }
 
-char * cas_check_expressions(request_rec *r, char *word) {
+char * cas_check_expressions(request_rec *r, const char *word) {
 
 		const cas_cfg *const c = ap_get_module_config(r->server->module_config, &auth_cas_module);
 

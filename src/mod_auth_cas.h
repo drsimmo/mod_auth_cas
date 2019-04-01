@@ -252,7 +252,7 @@ int cas_authorize(request_rec *r);
 int cas_authorize_worker(request_rec *r, const cas_saml_attr *const attrs, const require_line *const reqs, int nelts, const cas_cfg *const c);
 #else
 authz_status cas_check_authorization(request_rec *r, const char *require_line, const void *parsed_require_line);
-char * cas_check_expressions(request_rec *r, char *word);
+char * cas_check_expressions(request_rec *r, const char *word);
 #endif
 
 /* Fancy wrapper around flock() */
