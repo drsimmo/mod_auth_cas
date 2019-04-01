@@ -2460,14 +2460,17 @@ char * cas_check_expressions(request_rec *r, char *word) {
 
 		const cas_cfg *const c = ap_get_module_config(r->server->module_config, &auth_cas_module);
 
-		const char *e, *err, *tt, *ww;
+		const char *e, *err, *ww;
+		const char *tt = NULL;
 		char *output = malloc(sizeof(*output));
 		int index;
 
 		apr_pool_t *temp_pool;
   	ap_expr_info_t *info = malloc(sizeof(*info));
 
-		/* find length of attribute name by parsing on : */
+		/* Find length of attribute name by parsing on : 
+		 * We're shifting the pointer position on word 
+		 * variable here though! */
 		e = strchr(word,':');
 		index = (int)(e-word)+1;
 /*		if(c->CASDebug)
@@ -2479,6 +2482,10 @@ char * cas_check_expressions(request_rec *r, char *word) {
 		/* Check to see if there are any expressions that need 
 		 * parsing, especially variables with functions */
 		if (index > 0) {
+			/* This will shift the pointer of the word variable
+			 * to the position after the : – therefore we need
+			 * to multiply the index by 2 to get the correct
+			 * position */
 			tt = strndup(word+index*2,sizeof(word)-index*2);
 			apr_pool_create(&temp_pool,NULL);
 			ww = ap_expr_parse(r->pool,temp_pool,info,word,NULL);
