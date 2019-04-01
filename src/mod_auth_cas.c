@@ -2467,6 +2467,10 @@ char * cas_check_expressions(request_rec *r, const char *word) {
 		apr_pool_t *temp_pool;
   	ap_expr_info_t *info = malloc(sizeof(*info));
 
+		if(c->CASDebug)
+			ap_log_rerror(APLOG_MARK, APLOG_DEBUG, 0, r,
+			      "Entering cas_check_expressions.");
+
 		/* Find length of attribute name by parsing on : 
 		 * We're shifting the pointer position on word 
 		 * variable here though! */
