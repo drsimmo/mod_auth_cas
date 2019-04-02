@@ -2430,6 +2430,9 @@ authz_status cas_check_authorization(request_rec *r,
 	if(!r->user) return AUTHZ_DENIED_NO_USER;
 
 	t = require_line;
+			if(c->CASDebug)
+				ap_log_rerror(APLOG_MARK, APLOG_DEBUG, 0, r,
+					      "Require line = '%s'", t);
 	while ((w = ap_getword_conf(r->pool, &t)) && w[0]) {
 		count_casattr++;
 		
@@ -2478,16 +2481,16 @@ char * cas_check_expressions(request_rec *r, const char *word) {
 		 * variable here */
 		e = strchr(word,':');
 		index = (int)(e-word+1);
-/*		if(c->CASDebug)
-			ap_log_rerror(APLOG_MARK, APLOG_DEBUG, 0, r,
-		    "index is: %d",index); 
+		/* if(c->CASDebug)
+		 * ap_log_rerror(APLOG_MARK, APLOG_DEBUG, 0, r,
+		 *   "strchr output is: %s",e); */
 		if(c->CASDebug)
 			ap_log_rerror(APLOG_MARK, APLOG_DEBUG, 0, r,
-		    "attribute is: '%s'",word); */
+		    "attribute is: '%s'",word); 
 		/* Check to see if there are any expressions that need 
 		 * parsing, especially variables with functions */
 		if (index > 0) {
-			tt = strndup(word+index,sizeof(word)-index);
+			tt = strndup(word+index*2,sizeof(word)-index*2);
 			apr_pool_create(&temp_pool,NULL);
 			ww = ap_expr_parse(r->pool,temp_pool,info,word,NULL);
 			apr_pool_destroy(temp_pool);
