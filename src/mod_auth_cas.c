@@ -2419,12 +2419,9 @@ authz_status cas_check_authorization(request_rec *r,
 	const cas_cfg *const c = ap_get_module_config(r->server->module_config, &auth_cas_module);
 	const cas_saml_attr *const attrs = cas_get_attributes(r);
 
-	const char *t, *tt, *w, *ww, *err, *e;
-	const char *output = malloc(sizeof(*output));
+	const char *t, *w;
+	char *output;
 	unsigned int count_casattr = 0;
-	int index;
-	apr_pool_t *temp_pool;
-  ap_expr_info_t *info = malloc(sizeof(*info));
 
 	if(c->CASDebug)
 		ap_log_rerror(APLOG_MARK, APLOG_DEBUG, 0, r,
@@ -2433,43 +2430,17 @@ authz_status cas_check_authorization(request_rec *r,
 	if(!r->user) return AUTHZ_DENIED_NO_USER;
 
 	t = require_line;
+			if(c->CASDebug)
+				ap_log_rerror(APLOG_MARK, APLOG_DEBUG, 0, r,
+					      "Require line = '%s'", t);
 	while ((w = ap_getword_conf(r->pool, &t)) && w[0]) {
 		count_casattr++;
-		/* find length of attribute name by parsing on : */
-		e = strchr(w,':');
-		index = (int)(e-w)+1;
-		if(c->CASDebug)
-			ap_log_rerror(APLOG_MARK, APLOG_DEBUG, 0, r,
-		    "index is: %d",index);
-		if(c->CASDebug)
-			ap_log_rerror(APLOG_MARK, APLOG_DEBUG, 0, r,
-		    "attribute is: '%s'",w);
-		/* Check to see if there are any expressions that need 
-		 * parsing, especially variables with functions */
-		if (index > 0) {
-			tt = strndup(w+index*2,sizeof(w)-index*2);
-			apr_pool_create(&temp_pool,NULL);
-			ww = ap_expr_parse(r->pool,temp_pool,info,w,NULL);
-			apr_pool_destroy(temp_pool);
-			if (!ww) {
-				output = ap_expr_str_exec(r,info,&err);
-				if(c->CASDebug)
-					ap_log_rerror(APLOG_MARK, APLOG_DEBUG, 0, r, 
-					"Expression is: '%s'",output);
-				if (err) {
-					if(c->CASDebug)
-						ap_log_rerror(APLOG_MARK, APLOG_DEBUG, 0, r, 
-						"Could not execute expression: '%s'",err);
-				}
-			} else {
-				if(c->CASDebug)
-					ap_log_rerror(APLOG_MARK, APLOG_DEBUG, 0, r,
-							"Could not parse expression: '%s'",ww);
+		
+		/* Check for Apache 2.4 expressions and parse any found */
+		output = cas_check_expressions(r, w);
+		if (output == (char *)CAS_ATTR_NO_MATCH)
 				return AUTHZ_DENIED;
-			}
-		} else {
-			output = w;
-		}
+
 		if (cas_match_attribute(output, attrs, r) == CAS_ATTR_MATCH) {
 			/* If *any* attribute matches, then
 			 * authorization has succeeded and all
@@ -2488,6 +2459,61 @@ authz_status cas_check_authorization(request_rec *r,
 				      "'Require cas-attribute' missing specification(s) in configuration. Declining.");
 	}
 	return AUTHZ_DENIED;
+}
+
+char * cas_check_expressions(request_rec *r, const char *word) {
+
+		const cas_cfg *const c = ap_get_module_config(r->server->module_config, &auth_cas_module);
+
+		const char *e, *err, *tt, *ww;
+		char *output = malloc(sizeof(*output));
+		int index;
+
+		apr_pool_t *temp_pool;
+  	ap_expr_info_t *info = malloc(sizeof(*info));
+
+		if(c->CASDebug)
+			ap_log_rerror(APLOG_MARK, APLOG_DEBUG, 0, r,
+			      "Entering cas_check_expressions.");
+
+		/* Find length of attribute name by parsing on : 
+		 * We're shifting the pointer position on word 
+		 * variable here */
+		e = strchr(word,':');
+		index = (int)(e-word+1);
+		/* if(c->CASDebug)
+		 * ap_log_rerror(APLOG_MARK, APLOG_DEBUG, 0, r,
+		 *   "strchr output is: %s",e); */
+		if(c->CASDebug)
+			ap_log_rerror(APLOG_MARK, APLOG_DEBUG, 0, r,
+		    "attribute is: '%s'",word); 
+		/* Check to see if there are any expressions that need 
+		 * parsing, especially variables with functions */
+		if (index > 0) {
+			tt = strndup(word+index*2,sizeof(word)-index*2);
+			apr_pool_create(&temp_pool,NULL);
+			ww = ap_expr_parse(r->pool,temp_pool,info,word,NULL);
+			apr_pool_destroy(temp_pool);
+			if (!ww) {
+				output = ap_expr_str_exec(r,info,&err);
+				if(c->CASDebug)
+					ap_log_rerror(APLOG_MARK, APLOG_DEBUG, 0, r, 
+					"Parsed expression is: '%s'",output);
+				if (err) {
+					if(c->CASDebug)
+						ap_log_rerror(APLOG_MARK, APLOG_DEBUG, 0, r, 
+						"Could not execute expression: '%s'",err);
+				}
+			} else {
+				if(c->CASDebug)
+					ap_log_rerror(APLOG_MARK, APLOG_DEBUG, 0, r,
+							"Could not parse expression: '%s'",ww);
+				return (char *)CAS_ATTR_NO_MATCH;
+			}
+		} else {
+			output = word;
+		}
+		return output;
 }
 
 static const authz_provider authz_cas_provider =
