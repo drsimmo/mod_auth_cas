@@ -2487,6 +2487,9 @@ const char * cas_check_expressions(request_rec *r, const char *word) {
 		 * parsing, especially variables with functions */
 		if (index > 0) {
 			tt = strndup(word+index*2,sizeof(word)-index*2);
+			if(c->CASDebug)
+				ap_log_rerror(APLOG_MARK, APLOG_DEBUG, 0, r,
+			    "attribute is: '%s'",word); 
 			apr_pool_create(&temp_pool,NULL);
 			ww = ap_expr_parse(r->pool,temp_pool,info,word,NULL);
 			apr_pool_destroy(temp_pool);
