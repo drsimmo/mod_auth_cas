@@ -2419,8 +2419,7 @@ authz_status cas_check_authorization(request_rec *r,
 	const cas_cfg *const c = ap_get_module_config(r->server->module_config, &auth_cas_module);
 	const cas_saml_attr *const attrs = cas_get_attributes(r);
 
-	const char *t, *w;
-	char *output;
+	const char *t, *w, *output;
 	unsigned int count_casattr = 0;
 
 	if(c->CASDebug)
@@ -2466,7 +2465,7 @@ char * cas_check_expressions(request_rec *r, const char *word) {
 		const cas_cfg *const c = ap_get_module_config(r->server->module_config, &auth_cas_module);
 
 		const char *e, *err, *tt, *ww;
-		char *output = malloc(sizeof(*output));
+		const char *output = malloc(sizeof(*output));
 		int index;
 
 		apr_pool_t *temp_pool;
