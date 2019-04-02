@@ -2481,13 +2481,13 @@ char * cas_check_expressions(request_rec *r, const char *word) {
 		if(c->CASDebug)
 			ap_log_rerror(APLOG_MARK, APLOG_DEBUG, 0, r,
 		    "index is: %d",index); 
-/*		if(c->CASDebug)
+		if(c->CASDebug)
 			ap_log_rerror(APLOG_MARK, APLOG_DEBUG, 0, r,
-		    "attribute is: '%s'",word); */
+		    "attribute is: '%s'",word); 
 		/* Check to see if there are any expressions that need 
 		 * parsing, especially variables with functions */
 		if (index > 0) {
-			tt = strndup(word+index*2,sizeof(word)-index*2);
+			tt = strndup(word+index,sizeof(word)-index);
 			apr_pool_create(&temp_pool,NULL);
 			ww = ap_expr_parse(r->pool,temp_pool,info,word,NULL);
 			apr_pool_destroy(temp_pool);
