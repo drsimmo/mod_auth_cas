@@ -2419,7 +2419,8 @@ authz_status cas_check_authorization(request_rec *r,
 	const cas_cfg *const c = ap_get_module_config(r->server->module_config, &auth_cas_module);
 	const cas_saml_attr *const attrs = cas_get_attributes(r);
 
-	const char *t, *w, *output;
+	const char *t, *w;
+	char *output;
 	unsigned int count_casattr = 0;
 
 	if(c->CASDebug)
@@ -2460,12 +2461,12 @@ authz_status cas_check_authorization(request_rec *r,
 	return AUTHZ_DENIED;
 }
 
-const char * cas_check_expressions(request_rec *r, const char *word) {
+char * cas_check_expressions(request_rec *r, const char *word) {
 
 		const cas_cfg *const c = ap_get_module_config(r->server->module_config, &auth_cas_module);
 
 		const char *e, *err, *tt, *ww;
-		const char *output = malloc(sizeof(*output));
+		char *output = malloc(sizeof(*output));
 		int index;
 
 		apr_pool_t *temp_pool;
@@ -2487,9 +2488,6 @@ const char * cas_check_expressions(request_rec *r, const char *word) {
 		 * parsing, especially variables with functions */
 		if (index > 0) {
 			tt = strndup(word+index*2,sizeof(word)-index*2);
-			if(c->CASDebug)
-				ap_log_rerror(APLOG_MARK, APLOG_DEBUG, 0, r,
-			    "attribute is: '%s'",word); 
 			apr_pool_create(&temp_pool,NULL);
 			ww = ap_expr_parse(r->pool,temp_pool,info,word,NULL);
 			apr_pool_destroy(temp_pool);
