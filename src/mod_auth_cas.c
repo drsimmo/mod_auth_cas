@@ -2430,9 +2430,6 @@ authz_status cas_check_authorization(request_rec *r,
 	if(!r->user) return AUTHZ_DENIED_NO_USER;
 
 	t = require_line;
-			if(c->CASDebug)
-				ap_log_rerror(APLOG_MARK, APLOG_DEBUG, 0, r,
-					      "Require line = '%s'", t);
 	while ((w = ap_getword_conf(r->pool, &t)) && w[0]) {
 		count_casattr++;
 		
